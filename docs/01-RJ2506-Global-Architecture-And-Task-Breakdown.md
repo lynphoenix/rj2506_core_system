@@ -119,6 +119,8 @@ RJ2506 是一款双臂轮式复合机器人（14轴：双臂各6轴 + 2驱动轮
 
 ### Phase 2: AI 训练与全链路联调
 *(待 Phase 1 的底层基建 100% 跑通并验证后开启)*
-*   **[2.1] 数据采集与 Sim2Real**: 录制 50 条遥操作数据，导入 IsaacLab 生成 10000 条带各种光照变异的合成数据。
-*   **[2.2] DP 模型训练与 TensorRT 部署**: 在 H100 训练，Orin 上部署，保证推理 $< 30ms$。
-*   **[2.3] 大脑节点 (Brain Node) 实车串联**: 将 Nav2 -> ACT -> Feature Memory -> IBVS -> Touch-down 在物理真机上通过 Brain Node 全部打通测试。
+👉 **[开发设计文档：07-Phase2-AI-Training-And-Integration.md](./07-Phase2-AI-Training-And-Integration.md)** (已完成)
+
+*   **[2.1] 遥操作数据采集与处理 (Data Collection)**: 采用 Leader-Follower 模式录制 50 条真机专家轨迹。利用 C++ Daemon 环形缓冲区保证动作与图像时间戳严格对齐。之后通过 IsaacLab 域随机化扩充 10000 条数据。
+*   **[2.2] ACT 模型训练与部署 (Training & Deployment)**: 训练 ACT 模型直接输出 14 轴关节空间位姿 ($q$)，以避免逆运动学奇异点。通过 TensorRT 在 Orin 端实现 $< 30ms$ 低延迟推理。
+*   **[2.3] 大脑节点 (Brain Node) 串联**: 构建强健状态机（Behavior Tree），将 Nav2 -> WBC -> ACT -> 特征记忆 -> IBVS 盲插 -> 触底释放 完整管线打通，并负责异常重试与安全降级。
