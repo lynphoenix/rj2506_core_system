@@ -120,13 +120,13 @@ tf1.word_wrap = True
 p1 = tf1.paragraphs[0]
 p1.text = "场景 1：大框码料"
 p1.font.bold = True
-p1.font.size = Pt(22)
+p1.font.size = Pt(20)
 p1.font.color.rgb = COLOR_SECONDARY
 
 p1_desc = tf1.add_paragraph()
 p1_desc.text = """• 目标: 双手从下料平台同时抓取大料片，搬运并精准码放到大框中
 • 难点: 大框边缘限制，放置必须极度平稳精准，杜绝磕碰"""
-p1_desc.font.size = Pt(16)
+p1_desc.font.size = Pt(14)
 p1_desc.font.color.rgb = COLOR_TEXT_DARK
 
 # 场景 2 卡片
@@ -140,13 +140,13 @@ tf2.word_wrap = True
 p2 = tf2.paragraphs[0]
 p2.text = "场景 2：小框换框与码垛"
 p2.font.bold = True
-p2.font.size = Pt(22)
+p2.font.size = Pt(20)
 p2.font.color.rgb = COLOR_ACCENT
 
 p2_desc = tf2.add_paragraph()
 p2_desc.text = """• 目标: 推动空框替换满框，并将满框双手搬运至中转站进行高精度码垛
 • 难点: 视线完全遮挡，码垛极易重心偏移倒塌，需抗盲插和倾斜修正"""
-p2_desc.font.size = Pt(16)
+p2_desc.font.size = Pt(14)
 p2_desc.font.color.rgb = COLOR_TEXT_DARK
 
 
@@ -170,18 +170,18 @@ txBox = slide.shapes.add_textbox(left, top, width, height)
 tf = txBox.text_frame
 tf.word_wrap = True
 
-def add_bullet(tf, text, level=0, bold=False, color=COLOR_TEXT_DARK):
+def add_bullet(tf, text, level=0, bold=False, color=COLOR_TEXT_DARK, base_size=22):
     p = tf.add_paragraph()
     p.text = text
     p.level = level
-    # 增加基础字号，提升可读性
-    p.font.size = Pt(28 - level*4)
+    # 动态字号，避免溢出
+    p.font.size = Pt(base_size - level*3)
     p.font.bold = bold
     p.font.color.rgb = color
     set_font(p)
-    # 设置行距和段前距
-    p.line_spacing = 1.2
-    p.space_before = Pt(8)
+    # 设置紧凑行距和段前距
+    p.line_spacing = 1.1
+    p.space_before = Pt(5)
 
 # 清除默认段落
 tf.clear()
@@ -466,7 +466,18 @@ tf.clear()
 
 add_bullet(tf, "Phase 2: AI 训练与全链路联调", bold=True, color=COLOR_SECONDARY, level=0)
 add_bullet(tf, "时间: 4周", level=1, color=COLOR_ACCENT, bold=True)
-add_bullet(tf, "任务: Sim2Real数据采集与训练、模型部署、实车打通与联调", level=1)
+add_bullet(tf, "核心任务列表:", level=1, bold=True)
+
+add_bullet(tf, "[2.1] 数据采集与 Sim2Real", level=2, bold=True, color=COLOR_PRIMARY)
+add_bullet(tf, "• 录制 50 条遥操作真机数据，导入 IsaacLab", level=3)
+add_bullet(tf, "• 生成 10000 条带各种光照变异的合成数据进行扩充", level=3)
+
+add_bullet(tf, "[2.2] DP 模型训练与 TensorRT 部署", level=2, bold=True, color=COLOR_PRIMARY)
+add_bullet(tf, "• 在 H100 集群上完成 Diffusion Policy 训练", level=3)
+add_bullet(tf, "• Orin 边缘端 TensorRT 部署，保证推理延迟 < 30ms", level=3)
+
+add_bullet(tf, "[2.3] 大脑节点 (Brain Node) 实车串联", level=2, bold=True, color=COLOR_PRIMARY)
+add_bullet(tf, "• 将 Nav2 -> ACT -> Feature Memory -> IBVS -> Touch-down 管线在真机完全打通", level=3)
 
 
 # --- Slide 11: 结尾 ---
